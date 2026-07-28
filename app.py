@@ -31,7 +31,7 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------
-       Tabs 頁籤切換（特別強化：解決手機深色模式字體隱藏問題）
+       Tabs 頁籤切換（解決深色模式字體隱藏問題）
        ---------------------------------------------------- */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px !important;
@@ -334,7 +334,8 @@ HIDDEN_ENERGY_MAP = {
 }
 
 def process_digits_and_pairs(year: int, month: int, day: int):
-    year_s, month_s, day_s = str(year), str(month), str(day)
+    # 【關鍵修正】使用 abs() 確保閏月傳入負數月份（如 -5 月）時不會產生 '-' 號
+    year_s, month_s, day_s = str(abs(year)), str(abs(month)), str(abs(day))
     raw_seq = f"{year_s}{month_s}{day_s}"
     pairs_info = []
 
@@ -391,7 +392,9 @@ def process_digits_and_pairs(year: int, month: int, day: int):
 
 def calculate_destiny_chart(year: int, month: int, day: int):
     raw_seq, pairs_info = process_digits_and_pairs(year, month, day)
-    full_digits = [int(ch) for ch in raw_seq]
+    
+    # 【安全防護】只抓取數字字元，徹底防止非數字符號拋出 ValueError
+    full_digits = [int(ch) for ch in raw_seq if ch.isdigit()]
     pattern_num = sum(full_digits)
     
     goal_num = pattern_num
@@ -522,7 +525,6 @@ def render_panel(res, title_prefix, date_desc):
     top_boxes_html = "".join([build_star_box_html(item, core_item) for item in res['matrix_top']])
     bottom_boxes_html = "".join([build_star_box_html(item, core_item) for item in res['matrix_bottom']])
 
-    # 乾淨排盤，不夾帶多餘外框
     st.markdown(f"<div class='panel-header'>〔 {title_prefix}排盤結果 〕</div>", unsafe_allow_html=True)
     
     st.markdown(f"<div class='section-subcaption'>{title_prefix} ‧ 神煞排盤矩陣</div>", unsafe_allow_html=True)
@@ -583,7 +585,10 @@ solar_res = calculate_destiny_chart(year, month, day)
 solar_obj = Solar.fromYmd(year, month, day)
 lunar_obj = solar_obj.getLunar()
 ly, lm, ld = lunar_obj.getYear(), lunar_obj.getMonth(), lunar_obj.getDay()
-lunar_res = calculate_destiny_chart(ly, lm, ld)
+
+# 【閏月顯示優化】如果是閏月，給予明確說明文字（例：閏五月）
+is_leap = "閏" if lm < 0 else ""
+lunar_res = calculate_destiny_chart(ly, abs(lm), ld)
 
 # 切換頁籤 (國曆/農曆)
 tab1, tab2 = st.tabs(["國曆排盤結果", "農曆排盤結果"])
@@ -592,4 +597,4 @@ with tab1:
     render_panel(solar_res, "國曆", f"【國曆生日】: {year}年{month}月{day}日")
 
 with tab2:
-    render_panel(lunar_res, "農曆", f"【自動轉換農曆】: {ly}年{lm}月{ld}日 (對應國曆 {year}/{month}/{day})")
+    render_panel(lunar_res, "農曆", f"【自動轉換農曆】: {ly}年{is_leap}{abs(lm)}月{ld}日 (對應國曆 {year}/{month}/{day})")
