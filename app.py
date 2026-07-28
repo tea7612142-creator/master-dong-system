@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制淺色保護 + 手機版 RWD 自動切換)
+# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制防止手機深色模式跑版)
 # -------------------------------------------------------------
 st.markdown("""
 <style>
@@ -269,55 +269,6 @@ st.markdown("""
         overflow-y: auto;
         line-height: 1.5;
         box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05); 
-    }
-
-    /* ----------------------------------------------------
-       手機版自動響應式切換 (RWD Mobile Styles)
-       當螢幕寬度 <= 768px 時自動套用
-       ---------------------------------------------------- */
-    @media (max-width: 768px) {
-        /* 頁面整體留白縮減，提升手機螢幕利用率 */
-        .block-container {
-            padding-top: 1.2rem !important;
-            padding-bottom: 1.5rem !important;
-            padding-left: 0.8rem !important;
-            padding-right: 0.8rem !important;
-        }
-
-        /* 主標題微縮防止手機版尷尬換行 */
-        .main-title {
-            font-size: 22px !important;
-            margin-bottom: 15px !important;
-        }
-
-        /* 調整表單內距 */
-        [data-testid="stForm"] {
-            padding: 15px 12px !important;
-        }
-
-        /* 神煞方塊等比例微縮，確保多欄併排不爆邊 */
-        .star-box, .star-box-core {
-            width: 58px !important;
-            height: 58px !important;
-        }
-        .star-top, .star-bottom {
-            font-size: 15px !important;
-        }
-        .matrix-row {
-            gap: 6px !important;
-        }
-
-        /* 面板卡片縮減 padding */
-        .panel-card {
-            padding: 14px !important;
-            margin-bottom: 15px !important;
-        }
-
-        /* 詳細計算過程高度稍微收攏 */
-        .tk-text-area {
-            height: 180px !important;
-            font-size: 13px !important;
-        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -666,7 +617,7 @@ def calculate_destiny_chart(year: int, month: int, day: int):
 # -------------------------------------------------------------
 def build_star_box_html(item, core_item):
     if not item:
-        return '<div class="star-box" style="border:none !important; background:transparent !important;"></div>'
+        return '<div style="width: 68px; height: 68px;"></div>'
     
     # 只有當真正的格局星存在於矩陣中時，才畫紅框！
     is_core = (core_item is not None and item == core_item)
@@ -748,7 +699,7 @@ lunar_obj = solar_obj.getLunar()
 ly, lm, ld = lunar_obj.getYear(), lunar_obj.getMonth(), lunar_obj.getDay()
 lunar_res = calculate_destiny_chart(ly, lm, ld)
 
-# 左右對照卡片渲染 (在電腦版自動並排，手機版自動切換為垂直單欄)
+# 左右對照卡片渲染
 col_left, col_right = st.columns(2)
 
 with col_left:
