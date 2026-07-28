@@ -36,10 +36,10 @@ st.markdown("""
         background: linear-gradient(135deg, #FFF0D0 0%, #D4AF37 50%, #AA771C 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 28px !important;
+        font-size: 26px !important;
         font-weight: 800;
         letter-spacing: 3px;
-        margin-bottom: 22px;
+        margin-bottom: 24px;
         filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25));
     }
 
