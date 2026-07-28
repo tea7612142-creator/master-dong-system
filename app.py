@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制淺色保護)
+# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制淺色保護 + 介面修正)
 # -------------------------------------------------------------
 st.markdown("""
 <style>
@@ -28,6 +28,14 @@ st.markdown("""
         max-width: 900px !important;
         padding-top: 2rem !important;
         padding-bottom: 3rem !important;
+    }
+
+    /* ----------------------------------------------------
+       隱藏輸入框內的 "Press Enter to submit form" 提示文字
+       ---------------------------------------------------- */
+    [data-testid="stInputInstruction"],
+    [data-testid="InputInstructions"] {
+        display: none !important;
     }
 
     /* ----------------------------------------------------
@@ -72,7 +80,7 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------
-       輸入框與按鈕（淺色模式保護）
+       輸入框與按鈕（淺色模式保護與排版優化）
        ---------------------------------------------------- */
     label, [data-testid="stWidgetLabel"] p {
         color: #4A3B32 !important;
@@ -334,7 +342,6 @@ HIDDEN_ENERGY_MAP = {
 }
 
 def process_digits_and_pairs(year: int, month: int, day: int):
-    # 使用 abs() 防止閏月產生負號
     year_s, month_s, day_s = str(abs(year)), str(abs(month)), str(abs(day))
     raw_seq = f"{year_s}{month_s}{day_s}"
     pairs_info = []
@@ -347,12 +354,10 @@ def process_digits_and_pairs(year: int, month: int, day: int):
     while i < n - 1:
         current_char = raw_seq[i]
         
-        # 5 無法作為獨立開頭，跳過
         if current_char == '5':
             i += 1
             continue
 
-        # 跨越 5 的連結處理
         if raw_seq[i+1] == '5':
             j = i + 1
             while j < n and raw_seq[j] == '5':
@@ -370,10 +375,8 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                         "strength": strength, 
                         "is_infinite": True
                     })
-                # 精確游標控制：將游標設為 j-1，使 next_d 可以在下一輪繼續與後續數字組合（解決吃字 Bug）
                 i = j - 1
             else:
-                # 末尾為 5 的閉合處理
                 pair = current_char + '5'
                 pairs_info.append({
                     "pair": f"{current_char}5➔比肩", 
@@ -383,7 +386,6 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                 })
                 i = j
         else:
-            # 一般相鄰兩數拆解
             pair = raw_seq[i:i+2]
             star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
             if star_name:
@@ -395,7 +397,6 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                 })
             i += 1
 
-    # 日含 5 的標記追加
     if has_day_five:
         pairs_info.append({
             "pair": f"{day_s}➔日期含5視為比肩", 
@@ -409,7 +410,6 @@ def process_digits_and_pairs(year: int, month: int, day: int):
 def calculate_destiny_chart(year: int, month: int, day: int):
     raw_seq, pairs_info = process_digits_and_pairs(year, month, day)
     
-    # 僅提取純數字計算，防止非字元錯誤
     full_digits = [int(ch) for ch in raw_seq if ch.isdigit()]
     pattern_num = sum(full_digits)
     
@@ -479,7 +479,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
     core_item = None
     has_exact_pattern_star = False
 
-    # 尋找真實格局星
     for r in range(2):
         for c in range(num_cols):
             item = grid_2d[r][c]
@@ -488,13 +487,11 @@ def calculate_destiny_chart(year: int, month: int, day: int):
                 break
         if core_r != -1: break
 
-    # 未入格處理：不強制指定其他星作為 core_item，確保未入格時不產生錯誤能量排列
     if not has_exact_pattern_star:
         pattern_name = f"{pattern_name}-未入格"
         core_item = None
 
     pattern_layout_tuples = []
-    # 嚴謹邏輯：只有在「入格（確實有格局星）」時，才進行十字格局能量排列計算
     if has_exact_pattern_star and core_item:
         opp_r = 1 if core_r == 0 else 0
         pattern_layout_tuples.append(("+", f"{core_item['name']}{core_item['mark']}"))
