@@ -31,7 +31,7 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------
-       Tabs 頁籤切換（修正深色模式字體隱藏問題）
+       Tabs 頁籤切換（特別強化：解決手機深色模式字體隱藏問題）
        ---------------------------------------------------- */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px !important;
@@ -49,24 +49,24 @@ st.markdown("""
         text-align: center !important;
     }
 
-    /* 強制標籤文字為深茶色 */
-    .stTabs [data-baseweb="tab"] p,
-    .stTabs button p,
-    .stTabs button div {
+    /* 強制未選中的標籤文字為清晰深茶色 */
+    .stTabs [data-baseweb="tab"] *,
+    .stTabs button *,
+    .stTabs p {
         color: #5C4A3E !important;
         font-weight: 600 !important;
         font-size: 15px !important;
+        opacity: 1 !important;
     }
 
     /* 選中的標籤：朱紅字白底 */
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
         border-radius: 6px !important;
     }
 
-    .stTabs [aria-selected="true"] p,
-    .stTabs [aria-selected="true"] div {
+    .stTabs [aria-selected="true"] * {
         color: #A84438 !important;
         font-weight: 700 !important;
     }
@@ -134,7 +134,7 @@ st.markdown("""
     }
     .title-wrapper { text-align: center; }
 
-    /* 表單與面板卡片 */
+    /* 表單外層 */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E8E2D5 !important;
@@ -143,20 +143,12 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.02) !important;
     }
 
-    .panel-card {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E8E2D5 !important;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 15px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-
     .panel-header {
         color: #4A3B32 !important;
         font-size: 18px;
         font-weight: 600;
         letter-spacing: 1px;
+        margin-top: 10px;
         margin-bottom: 12px;
         padding-bottom: 6px;
         border-bottom: 1px solid #F0EAE1;
@@ -167,6 +159,7 @@ st.markdown("""
         font-size: 13px;
         font-weight: 500;
         margin-bottom: 8px;
+        margin-top: 12px;
         letter-spacing: 0.5px;
     }
 
@@ -441,10 +434,8 @@ def calculate_destiny_chart(year: int, month: int, day: int):
     top_stars = [s for s in processed_stars if s['name'] in TOP_ROW_STARS]
     bottom_stars = [s for s in processed_stars if s['name'] in BOTTOM_ROW_STARS]
     
-    # 根據實際星的數量計算欄數，不再強制填補無效空位
     num_cols = max(len(top_stars), len(bottom_stars))
-    if num_cols == 0:
-        num_cols = 1
+    if num_cols == 0: num_cols = 1
     
     matrix_top = [None] * num_cols
     matrix_bottom = [None] * num_cols
@@ -469,7 +460,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
     core_item = None
     has_exact_pattern_star = False
 
-    # 1. 尋找真實格局星
     for r in range(2):
         for c in range(num_cols):
             item = grid_2d[r][c]
@@ -480,7 +470,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
 
     if not has_exact_pattern_star:
         pattern_name = f"{pattern_name}-未入格"
-        # 2. 未入格時，拿第一個非空星作為定位焦點計算能量排列
         for r in range(2):
             for c in range(num_cols):
                 item = grid_2d[r][c]
@@ -503,7 +492,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
         same_side_items = [grid_2d[core_r][c]['name'] + grid_2d[core_r][c]['mark'] for c in (core_c - 1, core_c + 1) if 0 <= c < num_cols and grid_2d[core_r][c]]
         if same_side_items: pattern_layout_tuples.append(("-", " ".join(same_side_items)))
 
-    # 過濾矩陣，徹底移除空白項
     clean_top = [item for item in matrix_top if item is not None]
     clean_bottom = [item for item in matrix_bottom if item is not None]
 
@@ -523,8 +511,7 @@ def calculate_destiny_chart(year: int, month: int, day: int):
 # 4. Web UI 渲染模組
 # -------------------------------------------------------------
 def build_star_box_html(item, core_item):
-    if not item:
-        return ''
+    if not item: return ''
     is_core = (core_item is not None and item == core_item)
     box_class = "star-box-core" if is_core else "star-box"
     mark_html = f'<div class="star-mark">{item["mark"]}</div>' if item["mark"] else ''
@@ -535,8 +522,7 @@ def render_panel(res, title_prefix, date_desc):
     top_boxes_html = "".join([build_star_box_html(item, core_item) for item in res['matrix_top']])
     bottom_boxes_html = "".join([build_star_box_html(item, core_item) for item in res['matrix_bottom']])
 
-    # 乾淨卡片結構：徹底移除多餘白框
-    st.markdown(f"<div class='panel-card'>", unsafe_allow_html=True)
+    # 乾淨排盤，不夾帶多餘外框
     st.markdown(f"<div class='panel-header'>〔 {title_prefix}排盤結果 〕</div>", unsafe_allow_html=True)
     
     st.markdown(f"<div class='section-subcaption'>{title_prefix} ‧ 神煞排盤矩陣</div>", unsafe_allow_html=True)
@@ -573,7 +559,6 @@ def render_panel(res, title_prefix, date_desc):
         <legend class="tk-legend">{title_prefix} - 詳細計算過程</legend>
         <div class="tk-text-area">{detail_text}</div>
     </fieldset>
-    </div>
     """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
@@ -600,7 +585,7 @@ lunar_obj = solar_obj.getLunar()
 ly, lm, ld = lunar_obj.getYear(), lunar_obj.getMonth(), lunar_obj.getDay()
 lunar_res = calculate_destiny_chart(ly, lm, ld)
 
-# 切換頁籤
+# 切換頁籤 (國曆/農曆)
 tab1, tab2 = st.tabs(["國曆排盤結果", "農曆排盤結果"])
 
 with tab1:
