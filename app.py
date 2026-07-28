@@ -36,7 +36,7 @@ st.markdown("""
         background: linear-gradient(135deg, #FFF0D0 0%, #D4AF37 50%, #AA771C 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 26px !important;
+        font-size: 28px !important;
         font-weight: 800;
         letter-spacing: 3px;
         margin-bottom: 24px;
@@ -99,7 +99,7 @@ st.markdown("""
         background-color: transparent !important;
         color: #FFF0D0 !important;
         font-weight: 800 !important;
-        font-size: 22px !important; /* 加大數字 */
+        font-size: 22px !important;
         text-align: center !important;
         padding: 4px 0 !important;
     }
@@ -200,23 +200,59 @@ st.markdown("""
         font-size: 14px;
         font-weight: 600;
         margin-bottom: 10px;
-        margin-top: 16px;
     }
 
-    /* 矩陣容器 */
-    .matrix-container {
+    /* 同一格整合容器 (左右併排) */
+    .combined-box {
         background: rgba(15, 23, 42, 0.6) !important;
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 15px;
         border: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .combined-left {
+        flex: 1.2;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .combined-right {
+        flex: 1;
+        min-width: 140px;
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid rgba(212, 175, 55, 0.2);
+        padding-left: 16px;
+    }
+
+    .matrix-divider {
+        border: none;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        margin: 8px 0;
+        width: 100%;
+    }
+
+    /* 手機寬度小於 480px 時自動調整為垂直排列 */
+    @media (max-width: 480px) {
+        .combined-right {
+            border-left: none;
+            border-top: 1px dashed rgba(212, 175, 55, 0.2);
+            padding-left: 0;
+            padding-top: 12px;
+        }
     }
 
     .matrix-row {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         margin: 4px 0;
     }
     
@@ -225,8 +261,8 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         background-color: rgba(30, 41, 59, 0.5) !important;
         border-radius: 10px;
-        width: 64px;
-        height: 64px;
+        width: 60px;
+        height: 60px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -241,8 +277,8 @@ st.markdown("""
         background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(30, 41, 59, 0.8) 100%) !important;
         box-shadow: 0 0 15px rgba(212, 175, 55, 0.35) !important;
         border-radius: 10px;
-        width: 64px;
-        height: 64px;
+        width: 60px;
+        height: 60px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -252,7 +288,7 @@ st.markdown("""
     }
     
     .star-top, .star-bottom { 
-        font-size: 16px; 
+        font-size: 15px; 
         font-weight: 700; 
         color: #F8FAFC !important; 
         line-height: 1.15;
@@ -262,20 +298,11 @@ st.markdown("""
     .star-mark { 
         position: absolute;
         top: 2px;
-        right: 5px;
-        font-size: 14px !important; 
+        right: 4px;
+        font-size: 13px !important; 
         font-weight: 800 !important; 
         color: #FFD700 !important; 
         text-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
-    }
-
-    /* 十字格局能量排列盒 */
-    .layout-box {
-        background: rgba(15, 23, 42, 0.6) !important;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-bottom: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     /* 詳細計算過程 Fieldset */
@@ -578,25 +605,31 @@ def render_panel(res, title_prefix, date_desc):
 
     st.markdown(f"<div class='panel-header'>〔 {title_prefix}排盤結果 〕</div>", unsafe_allow_html=True)
     
-    st.markdown(f"<div class='section-subcaption'>{title_prefix} ‧ 神煞排盤矩陣</div>", unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class="matrix-container">
-        <div class="matrix-row">{top_boxes_html}</div>
-        <hr class="matrix-divider">
-        <div class="matrix-row">{bottom_boxes_html}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"<div class='section-subcaption'>{title_prefix} ‧ 格局能量排列</div>", unsafe_allow_html=True)
-    
-    layout_html = "<div class='layout-box'>"
+    # 構建右側格局能量內容
+    layout_content = ""
     if res['pattern_layout_tuples']:
         for sign, content in res['pattern_layout_tuples']:
-            layout_html += f"<div style='margin: 6px 0;'><span style='color:#D4AF37; font-size: 17px; font-weight:800;'>{sign} &nbsp; {content}</span></div>"
+            layout_content += f"<div style='margin: 6px 0;'><span style='color:#D4AF37; font-size: 16px; font-weight:800;'>{sign} &nbsp; {content}</span></div>"
     else:
-        layout_html += "<div style='color:#64748B; font-size:14px;'>無能量排列組合</div>"
-    layout_html += "</div>"
-    st.markdown(layout_html, unsafe_allow_html=True)
+        layout_content = "<div style='color:#64748B; font-size:14px;'>無能量排列組合</div>"
+
+    # 將「神煞排盤矩陣」與「格局能量排列」合併至同一格 (左/右併排)
+    st.markdown(f"""
+    <div class="combined-box">
+        <div class="combined-left">
+            <div class="section-subcaption">{title_prefix} ‧ 神煞排盤矩陣</div>
+            <div class="matrix-row">{top_boxes_html}</div>
+            <hr class="matrix-divider">
+            <div class="matrix-row">{bottom_boxes_html}</div>
+        </div>
+        <div class="combined-right">
+            <div class="section-subcaption">{title_prefix} ‧ 格局能量排列</div>
+            <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; min-height: 80px;">
+                {layout_content}
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     detail_text = f"{date_desc}\n"
     detail_text += f"【處理後數字串】: {res['raw_seq']}\n"
@@ -621,7 +654,7 @@ st.markdown("<div class='main-title'>董大師 ‧ 數字易經排盤系統</div
 
 # 輸入表單卡片
 with st.form("birth_form"):
-    col_y, col_m, col_d = st.columns([1.2, 1, 1])  # 微調寬度比例，讓國曆西元年不會太擠
+    col_y, col_m, col_d = st.columns([1.2, 1, 1])
     with col_y:
         year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1982, step=1)
     with col_m:
