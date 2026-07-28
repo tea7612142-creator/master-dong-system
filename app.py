@@ -234,7 +234,7 @@ st.markdown("""
         line-height: 1.15;
     }
     
-    /* 右上角標記：大幅增強視覺存在感 */
+    /* 右上角標記 */
     .star-mark { 
         position: absolute;
         top: 2px;
@@ -254,7 +254,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* 詳細計算過程 Fieldset */
+    /* 詳細計算過程 Fieldset (已修改：取消固定高度與自動滾動，改為全展開與自動換行) */
     .tk-fieldset {
         border: 1px solid rgba(212, 175, 55, 0.25) !important;
         padding: 14px 16px;
@@ -273,12 +273,13 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.08) !important; 
         border-radius: 8px;
         padding: 12px;
-        font-family: 'Courier New', monospace;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 13px;
         color: #CBD5E1 !important;
         white-space: pre-wrap;
-        height: 180px;
-        overflow-y: auto;
+        word-break: break-word;
+        height: auto !important;
+        overflow: visible !important;
         line-height: 1.6;
     }
 </style>
@@ -575,8 +576,8 @@ def render_panel(res, title_prefix, date_desc):
 
     detail_text = f"{date_desc}\n"
     detail_text += f"【處理後數字串】: {res['raw_seq']}\n"
-    detail_text += f"【格局數】: {res['pattern_num']}  |  【目標數】: {res['goal_num']}  |  【格局】: {res['pattern_name']}\n"
-    detail_text += "--------------------------------------------------\n"
+    detail_text += f"【格局數】: {res['pattern_num']}  ｜  【目標數】: {res['goal_num']}  ｜  【格局】: {res['pattern_name']}\n"
+    detail_text += "────────────────────────────────────────\n"
     detail_text += "【兩兩拆解與歸類詳情】:\n"
     for p in res['pairs_info']:
         inf_tag = " [無限大 ∞]" if p['is_infinite'] else ""
@@ -602,7 +603,7 @@ with st.form("birth_form"):
     with col_m:
         month = st.number_input("月", min_value=1, max_value=12, value=6, step=1)
     with col_d:
-        day = st.number_input("日", min_value=1, max_value=31, value=12, step=1)
+        day = st.number_input("日", min_value=1, max_value=31, value=31, step=1)
     
     submit_btn = st.form_submit_button("一 鍵 自 動 排 盤")
 
