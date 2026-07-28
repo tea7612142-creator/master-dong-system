@@ -30,9 +30,7 @@ st.markdown("""
         padding-bottom: 3rem !important;
     }
 
-    /* ----------------------------------------------------
-       隱藏輸入框內的 "Press Enter to submit form" 提示文字
-       ---------------------------------------------------- */
+    /* 隱藏輸入框內的 "Press Enter to submit form" 提示文字 */
     [data-testid="stInputInstruction"],
     [data-testid="InputInstructions"] {
         display: none !important;
@@ -203,7 +201,7 @@ st.markdown("""
         flex-shrink: 0;
     }
     
-    /* 核心格局星 */
+    /* 核心格局星 (朱紅框標示) */
     .star-box-core {
         border: 1.5px solid #A84438 !important;
         background-color: #FFFBFB !important;
@@ -479,6 +477,7 @@ def calculate_destiny_chart(year: int, month: int, day: int):
     core_item = None
     has_exact_pattern_star = False
 
+    # 1. 優先尋找原格局星
     for r in range(2):
         for c in range(num_cols):
             item = grid_2d[r][c]
@@ -487,12 +486,28 @@ def calculate_destiny_chart(year: int, month: int, day: int):
                 break
         if core_r != -1: break
 
+    # 2. 未入格修正：取最後一個拆解組合（末位星）做為核心星
     if not has_exact_pattern_star:
         pattern_name = f"{pattern_name}-未入格"
-        core_item = None
+        fallback_star_name = None
+        # 倒序尋找最後一個有星號的組合（避開非星號標記）
+        for p in reversed(pairs_info):
+            if p.get('star'):
+                fallback_star_name = p['star']
+                break
+        
+        if fallback_star_name:
+            for r in range(2):
+                for c in range(num_cols):
+                    item = grid_2d[r][c]
+                    if item and item['name'] == fallback_star_name and not item.get('is_hidden', False):
+                        core_r, core_c, core_item = r, c, item
+                        break
+                if core_r != -1: break
 
     pattern_layout_tuples = []
-    if has_exact_pattern_star and core_item:
+    # 十字格局能量排列計算 (有原格局星或末位備用星皆可計算)
+    if core_item:
         opp_r = 1 if core_r == 0 else 0
         pattern_layout_tuples.append(("+", f"{core_item['name']}{core_item['mark']}"))
 
@@ -513,7 +528,7 @@ def calculate_destiny_chart(year: int, month: int, day: int):
         "pattern_num": pattern_num,
         "goal_num": f"{goal_num}號人",
         "pattern_name": pattern_name,
-        "core_item": core_item if has_exact_pattern_star else None,
+        "core_item": core_item,
         "matrix_top": clean_top,
         "matrix_bottom": clean_bottom,
         "pairs_info": pairs_info,
