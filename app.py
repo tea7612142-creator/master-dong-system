@@ -196,7 +196,7 @@ st.markdown("""
         margin: 4px 0;
     }
     
-    /* 普通星宿方格 */
+   /* 普通星宿方格 */
     .star-box {
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         background-color: rgba(30, 41, 59, 0.5) !important;
@@ -234,20 +234,15 @@ st.markdown("""
         line-height: 1.15;
     }
     
+    /* 右上角標記：大幅增強視覺存在感 */
     .star-mark { 
         position: absolute;
-        top: 3px;
+        top: 2px;
         right: 5px;
-        font-size: 10px; 
-        font-weight: bold; 
-        color: #D4AF37 !important; 
-    }
-
-    .matrix-divider {
-        width: 80%;
-        margin: 12px auto;
-        border: 0;
-        border-top: 1px dashed rgba(255, 255, 255, 0.15);
+        font-size: 14px !important; 
+        font-weight: 800 !important; 
+        color: #FFD700 !important; 
+        text-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
     }
 
     /* 十字格局能量排列盒 */
