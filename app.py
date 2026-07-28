@@ -63,34 +63,58 @@ st.markdown("""
         display: none !important;
     }
 
-    /* 輸入框 Label */
+    /* 輸入框 Label 統一對齊與高度 */
     label, [data-testid="stWidgetLabel"] p {
         color: #CBD5E1 !important;
         font-weight: 600 !important;
         font-size: 14px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 8px !important;
+        min-height: 22px !important;
+        display: flex !important;
+        align-items: center !important;
     }
 
-    /* 暗夜高光輸入框 */
-    div[data-baseweb="input"],
-    div[data-baseweb="base-input"],
-    .stNumberInput div {
-        background-color: rgba(15, 20, 30, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    /* 精準修正數字輸入框 (stNumberInput) 的外框與對齊 */
+    div[data-testid="stNumberInput"] > div {
+        background-color: rgba(15, 20, 30, 0.85) !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
         border-radius: 12px !important;
-        color: #F8FAFC !important;
+        overflow: hidden !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
     }
 
+    div[data-testid="stNumberInput"] > div:focus-within {
+        border-color: #D4AF37 !important;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.3) !important;
+    }
+
+    /* 清除內部子層 div 的重複背景與邊框，避免嵌套對齊錯位 */
+    div[data-testid="stNumberInput"] div {
+        border: none !important;
+        background-color: transparent !important;
+    }
+
+    /* 調大輸入日期的數字字體 */
     .stNumberInput input {
         background-color: transparent !important;
-        color: #F8FAFC !important;
-        font-weight: 700 !important;
+        color: #FFF0D0 !important;
+        font-weight: 800 !important;
+        font-size: 22px !important; /* 加大數字 */
+        text-align: center !important;
+        padding: 4px 0 !important;
     }
 
+    /* 加減按鈕優化 */
     .stNumberInput button {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        color: #CBD5E1 !important;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        color: #D4AF37 !important;
         border: none !important;
+        transition: background 0.2s ease !important;
+    }
+
+    .stNumberInput button:hover {
+        background-color: rgba(212, 175, 55, 0.2) !important;
+        color: #FFF0D0 !important;
     }
 
     /* 金箔流光主按鈕 */
@@ -105,7 +129,7 @@ st.markdown("""
         border: none !important;
         padding: 12px 20px !important;
         width: 100% !important;
-        margin-top: 10px !important;
+        margin-top: 14px !important;
         letter-spacing: 2px !important;
         box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3) !important;
         transition: all 0.3s ease !important;
@@ -254,7 +278,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* 詳細計算過程 Fieldset (已修改：取消固定高度與自動滾動，改為全展開與自動換行) */
+    /* 詳細計算過程 Fieldset */
     .tk-fieldset {
         border: 1px solid rgba(212, 175, 55, 0.25) !important;
         padding: 14px 16px;
@@ -597,7 +621,7 @@ st.markdown("<div class='main-title'>董大師 ‧ 數字易經排盤系統</div
 
 # 輸入表單卡片
 with st.form("birth_form"):
-    col_y, col_m, col_d = st.columns(3)
+    col_y, col_m, col_d = st.columns([1.2, 1, 1])  # 微調寬度比例，讓國曆西元年不會太擠
     with col_y:
         year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1982, step=1)
     with col_m:
