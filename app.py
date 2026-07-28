@@ -12,170 +12,175 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制淺色保護 + 介面修正)
+# 2. 自訂 CSS 樣式 (微浮雕灰藍 Glassmorphism 風格)
 # -------------------------------------------------------------
 st.markdown("""
 <style>
-    /* 全局背景：溫暖的日系米白紙感 */
+    /* 全局背景：柔和淡灰藍色 */
     .stApp, body {
-        background-color: #FBF9F5 !important;
-        color: #333333 !important;
-        font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+        background-color: #E9EFF5 !important;
+        color: #1E293B !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
     }
     
-    /* 限制整體內容最大寬度與留白 */
+    /* 限制整體內容最大寬度 */
     .block-container {
-        max-width: 900px !important;
-        padding-top: 2rem !important;
+        max-width: 800px !important;
+        padding-top: 2.5rem !important;
         padding-bottom: 3rem !important;
     }
 
-    /* 隱藏輸入框內的 "Press Enter to submit form" 提示文字 */
+    /* 主標題風格 */
+    .main-title {
+        text-align: center;
+        color: #2B5278;
+        font-size: 26px !important;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+    }
+    .title-wrapper { text-align: center; }
+
+    /* ----------------------------------------------------
+       外層柔和微浮雕卡片 (如同參考圖片的 Form 面板)
+       ---------------------------------------------------- */
+    [data-testid="stForm"] {
+        background: linear-gradient(135deg, #C4D0E0 0%, #AEBECF 100%) !important;
+        border-radius: 22px !important;
+        border: none !important;
+        padding: 24px !important;
+        box-shadow: 
+            inset 0 1px 2px rgba(255, 255, 255, 0.8),
+            0 12px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* 隱藏輸入框內的 "Press Enter to submit form" 提示 */
     [data-testid="stInputInstruction"],
     [data-testid="InputInstructions"] {
         display: none !important;
     }
 
-    /* ----------------------------------------------------
-       Tabs 頁籤切換（特別強化：解決手機深色模式字體隱藏問題）
-       ---------------------------------------------------- */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px !important;
-        background-color: #EFEAE1 !important;
-        padding: 6px !important;
-        border-radius: 8px !important;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        height: 42px !important;
-        background-color: transparent !important;
-        border-radius: 6px !important;
-        border: none !important;
-        flex: 1 !important;
-        text-align: center !important;
-    }
-
-    /* 強制未選中的標籤文字為清晰深茶色 */
-    .stTabs [data-baseweb="tab"] *,
-    .stTabs button *,
-    .stTabs p {
-        color: #5C4A3E !important;
-        font-weight: 600 !important;
-        font-size: 15px !important;
-        opacity: 1 !important;
-    }
-
-    /* 選中的標籤：朱紅字白底 */
-    .stTabs [aria-selected="true"] {
-        background-color: #FFFFFF !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
-        border-radius: 6px !important;
-    }
-
-    .stTabs [aria-selected="true"] * {
-        color: #A84438 !important;
-        font-weight: 700 !important;
-    }
-
-    /* ----------------------------------------------------
-       輸入框與按鈕（淺色模式保護與排版優化）
-       ---------------------------------------------------- */
+    /* 輸入框標籤 */
     label, [data-testid="stWidgetLabel"] p {
-        color: #4A3B32 !important;
-        font-weight: 600 !important;
+        color: #2B5278 !important;
+        font-weight: 700 !important;
         font-size: 15px !important;
+        margin-bottom: 6px !important;
     }
 
+    /* 白色圓角輸入框 */
     div[data-baseweb="input"],
     div[data-baseweb="base-input"],
     .stNumberInput div {
-        background-color: #FAF8F5 !important;
-        color: #333333 !important;
-        border-color: #DCD5C9 !important;
-        border-radius: 6px !important;
+        background-color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04) !important;
     }
 
     .stNumberInput input {
-        background-color: #FAF8F5 !important;
-        color: #333333 !important;
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
         font-weight: 600 !important;
+        border-radius: 12px !important;
     }
 
     .stNumberInput button {
-        background-color: #EFEAE1 !important;
-        color: #4A3B32 !important;
+        background-color: #F1F5F9 !important;
+        color: #334155 !important;
         border: none !important;
     }
 
+    /* 主執行按鈕：深藍高質感立體按鈕 */
     .stButton > button,
     [data-testid="stFormSubmitButton"] > button,
     [data-testid="stFormSubmitButton"] button {
-        background-color: #A84438 !important;
+        background-color: #2B5278 !important;
         color: #FFFFFF !important;
         font-size: 16px !important;
-        font-weight: 600 !important;
-        border-radius: 6px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
         border: none !important;
-        padding: 10px 20px !important;
+        padding: 12px 20px !important;
         width: 100% !important;
-        box-shadow: 0 2px 6px rgba(168, 68, 56, 0.2) !important;
+        margin-top: 10px !important;
+        box-shadow: 
+            inset 0 1px 1px rgba(255, 255, 255, 0.3),
+            0 4px 12px rgba(43, 82, 120, 0.35) !important;
+        transition: all 0.2s ease !important;
     }
-    
-    .stButton > button *,
-    [data-testid="stFormSubmitButton"] button p {
+
+    /* ----------------------------------------------------
+       Tabs 頁籤切換（完美複製參考圖中的圓角懸浮按鈕）
+       ---------------------------------------------------- */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 12px !important;
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin-top: 10px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 48px !important;
+        background-color: #FFFFFF !important;
+        border-radius: 12px !important;
+        border: none !important;
+        flex: 1 !important;
+        text-align: center !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* 未選中的 Tab：深灰色字、白底 */
+    .stTabs [data-baseweb="tab"] *,
+    .stTabs button *,
+    .stTabs p {
+        color: #334155 !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        opacity: 1 !important;
+    }
+
+    /* 選中的 Tab：深藍底白字 + 立體微光 */
+    .stTabs [aria-selected="true"] {
+        background-color: #2B5278 !important;
+        box-shadow: 
+            inset 0 1px 1px rgba(255, 255, 255, 0.3),
+            0 4px 12px rgba(43, 82, 120, 0.35) !important;
+    }
+
+    .stTabs [aria-selected="true"] * {
         color: #FFFFFF !important;
     }
 
-    /* 主標題 */
-    .main-title {
-        text-align: center;
-        color: #4A3B32;
-        font-size: 26px !important;
-        font-weight: 600;
-        letter-spacing: 2px;
-        padding: 5px 0;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #E2DACD;
-        display: inline-block;
-    }
-    .title-wrapper { text-align: center; }
-
-    /* 表單外層 */
-    [data-testid="stForm"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E8E2D5 !important;
-        border-radius: 8px !important;
-        padding: 18px 20px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02) !important;
-    }
-
+    /* ----------------------------------------------------
+       結果展示卡片區域
+       ---------------------------------------------------- */
     .panel-header {
-        color: #4A3B32 !important;
+        color: #2B5278 !important;
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 1px;
-        margin-top: 10px;
+        margin-top: 15px;
         margin-bottom: 12px;
         padding-bottom: 6px;
-        border-bottom: 1px solid #F0EAE1;
+        border-bottom: 2px solid #CBD5E1;
     }
 
     .section-subcaption {
-        color: #7A6B5D !important;
-        font-size: 13px;
-        font-weight: 500;
+        color: #475569 !important;
+        font-size: 14px;
+        font-weight: 600;
         margin-bottom: 8px;
-        margin-top: 12px;
-        letter-spacing: 0.5px;
+        margin-top: 14px;
     }
 
-    /* 矩陣容器 */
     .matrix-container {
-        background-color: #FAF8F5 !important;
-        border: 1px solid #EFEAE1 !important;
-        border-radius: 6px;
-        padding: 15px;
+        background-color: #FFFFFF !important;
+        border-radius: 16px;
+        padding: 18px;
         margin-bottom: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .matrix-row {
@@ -186,11 +191,10 @@ st.markdown("""
         margin: 4px 0;
     }
     
-    /* 神煞卡片 */
     .star-box {
-        border: 1px solid #DCD5C9 !important;
-        background-color: #FFFFFF !important;
-        border-radius: 4px;
+        border: 1px solid #E2E8F0 !important;
+        background-color: #F8FAFC !important;
+        border-radius: 8px;
         width: 64px;
         height: 64px;
         display: flex;
@@ -201,11 +205,10 @@ st.markdown("""
         flex-shrink: 0;
     }
     
-    /* 核心格局星 (朱紅框標示) */
     .star-box-core {
-        border: 1.5px solid #A84438 !important;
-        background-color: #FFFBFB !important;
-        border-radius: 4px;
+        border: 2px solid #2B5278 !important;
+        background-color: #F0F4F8 !important;
+        border-radius: 8px;
         width: 64px;
         height: 64px;
         display: flex;
@@ -218,8 +221,8 @@ st.markdown("""
     
     .star-top, .star-bottom { 
         font-size: 16px; 
-        font-weight: 600; 
-        color: #333333 !important; 
+        font-weight: 700; 
+        color: #1E293B !important; 
         line-height: 1.15;
     }
     
@@ -229,49 +232,46 @@ st.markdown("""
         right: 4px;
         font-size: 10px; 
         font-weight: bold; 
-        color: #A84438 !important; 
+        color: #2B5278 !important; 
     }
 
     .matrix-divider {
         width: 75%;
-        margin: 8px auto;
+        margin: 10px auto;
         border: 0;
-        border-top: 1px dashed #DCD5C9;
+        border-top: 1px dashed #CBD5E1;
     }
 
     .layout-box {
-        background-color: #FAF8F5 !important;
-        border: 1px solid #EFEAE1 !important;
-        border-radius: 6px;
-        padding: 12px 18px;
+        background-color: #FFFFFF !important;
+        border-radius: 12px;
+        padding: 14px 18px;
         margin-bottom: 15px;
         min-height: 48px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .tk-fieldset {
-        border: 1px solid #C4C4C4 !important;
-        padding: 8px 12px 12px 12px;
+        border: 1px solid #CBD5E1 !important;
+        padding: 12px 14px;
         margin-top: 15px;
-        margin-bottom: 5px;
-        border-radius: 2px;
-        background-color: #F7F5F0 !important; 
+        border-radius: 8px;
+        background-color: #FFFFFF !important; 
     }
     .tk-legend {
         font-size: 13px;
-        font-weight: 600;
-        color: #333333 !important;
+        font-weight: 700;
+        color: #2B5278 !important;
         padding: 0 6px;
-        width: auto;
-        margin-bottom: 0;
-        line-height: 1;
     }
     .tk-text-area {
-        background-color: #FFFFFF !important;
-        border: 1px solid #A9A9A9 !important; 
+        background-color: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important; 
+        border-radius: 6px;
         padding: 10px;
         font-family: monospace;
         font-size: 13px;
-        color: #111111 !important;
+        color: #334155 !important;
         white-space: pre-wrap;
         height: 180px;
         overflow-y: auto;
@@ -490,7 +490,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
     if not has_exact_pattern_star:
         pattern_name = f"{pattern_name}-未入格"
         fallback_star_name = None
-        # 倒序尋找最後一個有星號的組合（避開非星號標記）
         for p in reversed(pairs_info):
             if p.get('star'):
                 fallback_star_name = p['star']
@@ -506,7 +505,6 @@ def calculate_destiny_chart(year: int, month: int, day: int):
                 if core_r != -1: break
 
     pattern_layout_tuples = []
-    # 十字格局能量排列計算 (有原格局星或末位備用星皆可計算)
     if core_item:
         opp_r = 1 if core_r == 0 else 0
         pattern_layout_tuples.append(("+", f"{core_item['name']}{core_item['mark']}"))
@@ -566,9 +564,9 @@ def render_panel(res, title_prefix, date_desc):
     layout_html = "<div class='layout-box'>"
     if res['pattern_layout_tuples']:
         for sign, content in res['pattern_layout_tuples']:
-            layout_html += f"<div style='margin: 4px 0;'><span style='color:#A84438; font-size: 16px; font-weight:600;'>{sign} &nbsp; {content}</span></div>"
+            layout_html += f"<div style='margin: 4px 0;'><span style='color:#2B5278; font-size: 16px; font-weight:700;'>{sign} &nbsp; {content}</span></div>"
     else:
-        layout_html += "<div style='color:#888888; font-size:14px;'>無能量排列組合（未入格）</div>"
+        layout_html += "<div style='color:#888888; font-size:14px;'>無能量排列組合</div>"
     layout_html += "</div>"
     st.markdown(layout_html, unsafe_allow_html=True)
 
@@ -589,20 +587,20 @@ def render_panel(res, title_prefix, date_desc):
     """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 5. 主畫面介面
+# 5. 主畫面介面 (微浮雕灰藍卡片式佈局)
 # -------------------------------------------------------------
 st.markdown("<div class='title-wrapper'><div class='main-title'>董大師 數字易經排盤系統</div></div>", unsafe_allow_html=True)
 
+# 輸入表單卡片
 with st.form("birth_form"):
     col_y, col_m, col_d = st.columns(3)
     with col_y:
-        year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1976, step=1)
+        year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1982, step=1)
     with col_m:
-        month = st.number_input("月", min_value=1, max_value=12, value=7, step=1)
+        month = st.number_input("月", min_value=1, max_value=12, value=6, step=1)
     with col_d:
-        day = st.number_input("日", min_value=1, max_value=31, value=17, step=1)
+        day = st.number_input("日", min_value=1, max_value=31, value=12, step=1)
     
-    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
     submit_btn = st.form_submit_button("一 鍵 自 動 排 盤")
 
 # 執行計算
@@ -611,11 +609,11 @@ solar_obj = Solar.fromYmd(year, month, day)
 lunar_obj = solar_obj.getLunar()
 ly, lm, ld = lunar_obj.getYear(), lunar_obj.getMonth(), lunar_obj.getDay()
 
-# 閏月判定與顯示優化
+# 閏月判定
 is_leap = "閏" if lm < 0 else ""
 lunar_res = calculate_destiny_chart(ly, abs(lm), ld)
 
-# 切換頁籤 (國曆/農曆)
+# 切換頁籤 (懸浮圓角膠囊風格)
 tab1, tab2 = st.tabs(["國曆排盤結果", "農曆排盤結果"])
 
 with tab1:
