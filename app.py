@@ -12,14 +12,14 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 復刻桌面端視窗細節)
+# 2. 自訂 CSS 樣式 (日系 MUJI 質感風格 + 強制防止手機深色模式跑版)
 # -------------------------------------------------------------
 st.markdown("""
 <style>
     /* 全局背景：溫暖的日系米白紙感 */
-    .stApp {
+    .stApp, body {
         background-color: #FBF9F5 !important;
-        color: #333333;
+        color: #333333 !important;
         font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
     }
     
@@ -29,7 +29,44 @@ st.markdown("""
         padding-top: 2.5rem !important;
         padding-bottom: 3rem !important;
     }
-    
+
+    /* ----------------------------------------------------
+       強制鎖定輸入組件為淺色（防止手機深色模式造成黑框）
+       ---------------------------------------------------- */
+    /* 輸入框 Label 標題文字 */
+    label, [data-testid="stWidgetLabel"] p {
+        color: #4A3B32 !important;
+        font-weight: 600 !important;
+        font-size: 15px !important;
+    }
+
+    /* 數字輸入框外層容器 */
+    div[data-baseweb="input"],
+    div[data-baseweb="base-input"],
+    .stNumberInput div {
+        background-color: #FAF8F5 !important;
+        color: #333333 !important;
+        border-color: #DCD5C9 !important;
+        border-radius: 6px !important;
+    }
+
+    /* 數字輸入框內部文字 */
+    .stNumberInput input {
+        background-color: #FAF8F5 !important;
+        color: #333333 !important;
+        font-weight: 600 !important;
+    }
+
+    /* 數字輸入框 + - 加減按鈕 */
+    .stNumberInput button {
+        background-color: #EFEAE1 !important;
+        color: #4A3B32 !important;
+        border: none !important;
+    }
+    .stNumberInput button:hover {
+        background-color: #E0D8CA !important;
+    }
+
     /* 文青風主標題 */
     .main-title {
         text-align: center;
@@ -76,8 +113,8 @@ st.markdown("""
 
     /* 面板外框（國曆/農曆卡片化） */
     .panel-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E8E2D5;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E8E2D5 !important;
         border-radius: 8px;
         padding: 20px;
         margin-bottom: 20px;
@@ -85,7 +122,7 @@ st.markdown("""
     }
 
     .panel-header {
-        color: #4A3B32;
+        color: #4A3B32 !important;
         font-size: 18px;
         font-weight: 600;
         letter-spacing: 1px;
@@ -95,7 +132,7 @@ st.markdown("""
     }
 
     .section-subcaption {
-        color: #7A6B5D;
+        color: #7A6B5D !important;
         font-size: 13px;
         font-weight: 500;
         margin-bottom: 8px;
@@ -104,8 +141,8 @@ st.markdown("""
 
     /* 矩陣容器：置中排列 */
     .matrix-container {
-        background-color: #FAF8F5;
-        border: 1px solid #EFEAE1;
+        background-color: #FAF8F5 !important;
+        border: 1px solid #EFEAE1 !important;
         border-radius: 6px;
         padding: 15px;
         margin-bottom: 15px;
@@ -121,8 +158,8 @@ st.markdown("""
     
     /* 普通神煞卡片（日系極簡方塊） */
     .star-box {
-        border: 1px solid #DCD5C9;
-        background-color: #FFFFFF;
+        border: 1px solid #DCD5C9 !important;
+        background-color: #FFFFFF !important;
         border-radius: 4px;
         width: 68px;
         height: 68px;
@@ -137,7 +174,7 @@ st.markdown("""
     /* 核心格局星 (印章感朱紅細框) */
     .star-box-core {
         border: 1.5px solid #A84438 !important;
-        background-color: #FFFBFB;
+        background-color: #FFFBFB !important;
         border-radius: 4px;
         width: 68px;
         height: 68px;
@@ -152,13 +189,13 @@ st.markdown("""
     .star-top { 
         font-size: 17px; 
         font-weight: 600; 
-        color: #333333; 
+        color: #333333 !important; 
         line-height: 1.15;
     }
     .star-bottom { 
         font-size: 17px; 
         font-weight: 600; 
-        color: #333333; 
+        color: #333333 !important; 
         line-height: 1.15;
     }
     
@@ -169,7 +206,7 @@ st.markdown("""
         right: 4px;
         font-size: 10px; 
         font-weight: bold; 
-        color: #A84438; 
+        color: #A84438 !important; 
     }
 
     /* 中間細分隔線 */
@@ -182,29 +219,27 @@ st.markdown("""
 
     /* 格局能量排列容器 */
     .layout-box {
-        background-color: #FAF8F5;
-        border: 1px solid #EFEAE1;
+        background-color: #FAF8F5 !important;
+        border: 1px solid #EFEAE1 !important;
         border-radius: 6px;
         padding: 12px 18px;
         margin-bottom: 15px;
         min-height: 50px;
     }
 
-    /* ----------------------------------------------------
-       復刻 Tkinter 桌面端 LabelFrame 與純白文字框效果
-       ---------------------------------------------------- */
+    /* 復刻 Tkinter 桌面端 LabelFrame 與純白文字框效果 */
     .tk-fieldset {
-        border: 1px solid #C4C4C4;
+        border: 1px solid #C4C4C4 !important;
         padding: 8px 12px 12px 12px;
         margin-top: 20px;
         margin-bottom: 5px;
         border-radius: 2px;
-        background-color: #F7F5F0; 
+        background-color: #F7F5F0 !important; 
     }
     .tk-legend {
         font-size: 13px;
         font-weight: 600;
-        color: #333333;
+        color: #333333 !important;
         padding: 0 6px;
         width: auto;
         margin-bottom: 0;
@@ -212,12 +247,12 @@ st.markdown("""
         border-bottom: none;
     }
     .tk-text-area {
-        background-color: #FFFFFF;
-        border: 1px solid #A9A9A9; 
+        background-color: #FFFFFF !important;
+        border: 1px solid #A9A9A9 !important; 
         padding: 12px;
         font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", monospace;
         font-size: 14px;
-        color: #111111;
+        color: #111111 !important;
         white-space: pre-wrap;
         height: 210px;
         overflow-y: auto;
@@ -504,7 +539,7 @@ def calculate_destiny_chart(year: int, month: int, day: int):
             if core_r != -1:
                 break
 
-    # 判斷是否未入格：如果格局星完全沒有出現在矩陣中，加上 -未入格
+    # 判斷是否未入格
     if not has_exact_pattern_star:
         pattern_name = f"{pattern_name}-未入格"
 
@@ -606,7 +641,7 @@ def render_panel(res, title_prefix, date_desc):
     layout_html += "</div>"
     st.markdown(layout_html, unsafe_allow_html=True)
 
-    # 3. 詳細計算過程 (復刻 Tkinter 桌面端視窗效果)
+    # 3. 詳細計算過程
     detail_text = f"{date_desc}\n"
     detail_text += f"【處理後數字串】: {res['raw_seq']}\n"
     detail_text += f"【格局數】: {res['pattern_num']}  |  【目標數】: {res['goal_num']}  |  【格局】: {res['pattern_name']}\n"
@@ -616,7 +651,6 @@ def render_panel(res, title_prefix, date_desc):
         inf_tag = " [無限大 ∞]" if p['is_infinite'] else ""
         detail_text += f"  • 組合 [{p['pair']}] ➔ {p['star']} ({p['strength']}){inf_tag}\n"
     
-    # 使用我們自訂的 CSS 類別包裝
     html = f"""
     <fieldset class="tk-fieldset">
         <legend class="tk-legend">{title_prefix} - 詳細計算過程</legend>
@@ -630,20 +664,17 @@ def render_panel(res, title_prefix, date_desc):
 # -------------------------------------------------------------
 st.markdown("<div class='title-wrapper'><div class='main-title'>董大師 數字易經排盤系統</div></div>", unsafe_allow_html=True)
 
-# 為了確保「月」和「日」的 + - 按鈕能夠順利顯示，稍微拉寬表單區塊比例
 pad_l, center_input, pad_r = st.columns([1, 2.5, 1])
 
 with center_input:
     with st.form("birth_form"):
-        # 內層欄位改為等距分配，確保寬度足以容納按鈕
         col_y, col_m, col_d = st.columns(3)
         with col_y:
-            # 加入 step=1 強制啟用微調按鈕
-            year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1984, step=1)
+            year = st.number_input("國曆西元年", min_value=1900, max_value=2100, value=1976, step=1)
         with col_m:
             month = st.number_input("月", min_value=1, max_value=12, value=7, step=1)
         with col_d:
-            day = st.number_input("日", min_value=1, max_value=31, value=11, step=1)
+            day = st.number_input("日", min_value=1, max_value=31, value=17, step=1)
         
         st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         submit_btn = st.form_submit_button("一 鍵 自 動 排 盤")
