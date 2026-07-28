@@ -39,7 +39,7 @@ st.markdown("""
         font-size: 28px !important;
         font-weight: 800;
         letter-spacing: 3px;
-        margin-bottom: 24px;
+        margin-bottom: 22px;
         filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25));
     }
 
