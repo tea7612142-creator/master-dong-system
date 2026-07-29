@@ -88,7 +88,7 @@ st.markdown("""
         box-shadow: 0 0 10px rgba(212, 175, 55, 0.3) !important;
     }
 
-    /* 清除內部子層 div 的重複背景與邊框，避免嵌套對齊錯位 */
+    /* 清除內部子層 div 的重複背景與邊框 */
     div[data-testid="stNumberInput"] div {
         border: none !important;
         background-color: transparent !important;
@@ -238,7 +238,6 @@ st.markdown("""
         width: 100%;
     }
 
-    /* 手機寬度小於 480px 時自動調整為垂直排列 */
     @media (max-width: 480px) {
         .combined-right {
             border-left: none;
@@ -408,10 +407,22 @@ def process_digits_and_pairs(year: int, month: int, day: int):
     while i < n - 1:
         current_char = raw_seq[i]
         
+        # 若當前字為 5 且後字為 0，形成 50 組合 (比肩)
         if current_char == '5':
-            i += 1
-            continue
+            if i + 1 < n and raw_seq[i+1] == '0':
+                pairs_info.append({
+                    "pair": "50",
+                    "star": "比肩",
+                    "strength": "強",
+                    "is_infinite": False
+                })
+                i += 1
+                continue
+            else:
+                i += 1
+                continue
 
+        # 若下一個字是 5
         if raw_seq[i+1] == '5':
             j = i + 1
             while j < n and raw_seq[j] == '5':
@@ -419,17 +430,28 @@ def process_digits_and_pairs(year: int, month: int, day: int):
             
             if j < n:
                 prev_d, next_d = raw_seq[i], raw_seq[j]
-                pair = prev_d + next_d
-                star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
-                fives = raw_seq[i+1:j]
-                if star_name:
+                # 特殊修正：若 5 後面是 0，不搭橋，直接讓 current_char 與 5 組合 (如 95➔比肩)
+                if next_d == '0':
                     pairs_info.append({
-                        "pair": f"{prev_d}{fives}{next_d}➔{pair}", 
-                        "star": star_name, 
-                        "strength": strength, 
-                        "is_infinite": True
+                        "pair": f"{current_char}5➔比肩",
+                        "star": "比肩",
+                        "strength": "強",
+                        "is_infinite": False
                     })
-                i = j - 1
+                    i += 1
+                    continue
+                else:
+                    pair = prev_d + next_d
+                    star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
+                    fives = raw_seq[i+1:j]
+                    if star_name:
+                        pairs_info.append({
+                            "pair": f"{prev_d}{fives}{next_d}➔{pair}", 
+                            "star": star_name, 
+                            "strength": strength, 
+                            "is_infinite": True
+                        })
+                    i = j - 1
             else:
                 pair = current_char + '5'
                 pairs_info.append({
@@ -605,7 +627,6 @@ def render_panel(res, title_prefix, date_desc):
 
     st.markdown(f"<div class='panel-header'>〔 {title_prefix}排盤結果 〕</div>", unsafe_allow_html=True)
     
-    # 構建右側格局能量內容
     layout_content = ""
     if res['pattern_layout_tuples']:
         for sign, content in res['pattern_layout_tuples']:
@@ -613,7 +634,6 @@ def render_panel(res, title_prefix, date_desc):
     else:
         layout_content = "<div style='color:#64748B; font-size:14px;'>無能量排列組合</div>"
 
-    # 將「神煞排盤矩陣」與「格局能量排列」合併至同一格 (左/右併排)
     st.markdown(f"""
     <div class="combined-box">
         <div class="combined-left">
