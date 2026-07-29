@@ -407,61 +407,53 @@ def process_digits_and_pairs(year: int, month: int, day: int):
     while i < n - 1:
         current_char = raw_seq[i]
         
-        # 若當前字為 5 且後字為 0，形成 50 組合 (比肩)
+        # 1. 當前數字是 5 時：與下一個數字直接組合 (如 50、55 等)
         if current_char == '5':
-            if i + 1 < n and raw_seq[i+1] == '0':
-                pairs_info.append({
-                    "pair": "50",
-                    "star": "比肩",
-                    "strength": "強",
-                    "is_infinite": False
-                })
-                i += 1
-                continue
-            else:
-                i += 1
-                continue
+            next_char = raw_seq[i+1]
+            pair = f"5{next_char}"
+            star_name, strength = ("比肩", "強") if ('0' in pair or '5' in pair) else STAR_MAP.get(pair, ("比肩", "強"))
+            pairs_info.append({
+                "pair": pair,
+                "star": star_name,
+                "strength": strength,
+                "is_infinite": False
+            })
+            i += 1
+            continue
 
-        # 若下一個字是 5
+        # 2. 下一個數字是 5 時
         if raw_seq[i+1] == '5':
             j = i + 1
             while j < n and raw_seq[j] == '5':
                 j += 1
             
-            if j < n:
+            # 只有當 5 後面是「非 0 數字」時才進行跨 5 搭橋 (例如 159 ➔ 19)
+            if j < n and raw_seq[j] != '0':
                 prev_d, next_d = raw_seq[i], raw_seq[j]
-                # 特殊修正：若 5 後面是 0，不搭橋，直接讓 current_char 與 5 組合 (如 95➔比肩)
-                if next_d == '0':
+                target_pair = prev_d + next_d
+                star_name, strength = ("比肩", "強") if '0' in target_pair else STAR_MAP.get(target_pair, (None, None))
+                fives = raw_seq[i+1:j]
+                if star_name:
                     pairs_info.append({
-                        "pair": f"{current_char}5➔比肩",
-                        "star": "比肩",
-                        "strength": "強",
-                        "is_infinite": False
+                        "pair": f"{prev_d}{fives}{next_d}➔{target_pair}", 
+                        "star": star_name, 
+                        "strength": strength, 
+                        "is_infinite": True
                     })
-                    i += 1
-                    continue
-                else:
-                    pair = prev_d + next_d
-                    star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
-                    fives = raw_seq[i+1:j]
-                    if star_name:
-                        pairs_info.append({
-                            "pair": f"{prev_d}{fives}{next_d}➔{pair}", 
-                            "star": star_name, 
-                            "strength": strength, 
-                            "is_infinite": True
-                        })
-                    i = j - 1
+                i = j - 1
             else:
-                pair = current_char + '5'
+                # 若 5 後面是 0 或到末尾，不搭橋，直接讓當前數字與 5 組合 (例如 95)
+                pair = f"{current_char}5"
+                star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, ("比肩", "強"))
                 pairs_info.append({
-                    "pair": f"{current_char}5➔比肩", 
-                    "star": "比肩", 
-                    "strength": "強", 
+                    "pair": pair, 
+                    "star": star_name, 
+                    "strength": strength, 
                     "is_infinite": False
                 })
-                i = j
+                i += 1
         else:
+            # 3. 一般相鄰數字組合
             pair = raw_seq[i:i+2]
             star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
             if star_name:
