@@ -394,23 +394,21 @@ HIDDEN_ENERGY_MAP = {
     "七煞": "正官", "偏印": "正印", "劫財": "比肩", "傷官": "食神"
 }
 
+# 全新重構：防穿透、絕對嚴謹的拆解邏輯
 def process_digits_and_pairs(year: int, month: int, day: int):
     year_s, month_s, day_s = str(abs(year)), str(abs(month)), str(abs(day))
     raw_seq = f"{year_s}{month_s}{day_s}"
     pairs_info = []
 
-    has_day_five = '5' in day_s
-
-    i = 0
     n = len(raw_seq)
+    i = 0
     
     while i < n - 1:
         current_char = raw_seq[i]
         
-        # 1. 當前數字是 5 時：與下一個數字直接組合 (如 50、55 等)
+        # 情況 1：當前指標就是 5 (例如 50, 56 等) -> 直接和下一個數字組合，絕不搭橋
         if current_char == '5':
-            next_char = raw_seq[i+1]
-            pair = f"5{next_char}"
+            pair = f"5{raw_seq[i+1]}"
             star_name, strength = ("比肩", "強") if ('0' in pair or '5' in pair) else STAR_MAP.get(pair, ("比肩", "強"))
             pairs_info.append({
                 "pair": pair,
@@ -421,28 +419,33 @@ def process_digits_and_pairs(year: int, month: int, day: int):
             i += 1
             continue
 
-        # 2. 下一個數字是 5 時
+        # 情況 2：下一個數字是 5 -> 需判定是「搭橋」還是「被 0 打斷」
         if raw_seq[i+1] == '5':
             j = i + 1
+            # 尋找 5 串的盡頭
             while j < n and raw_seq[j] == '5':
                 j += 1
             
-            # 只有當 5 後面是「非 0 數字」時才進行跨 5 搭橋 (例如 159 ➔ 19)
+            # 如果 5 後面還有數字，且「絕對不是 0」，才允許搭橋
             if j < n and raw_seq[j] != '0':
-                prev_d, next_d = raw_seq[i], raw_seq[j]
+                prev_d = raw_seq[i]
+                next_d = raw_seq[j]
                 target_pair = prev_d + next_d
                 star_name, strength = ("比肩", "強") if '0' in target_pair else STAR_MAP.get(target_pair, (None, None))
-                fives = raw_seq[i+1:j]
+                fives_str = raw_seq[i+1:j]
                 if star_name:
                     pairs_info.append({
-                        "pair": f"{prev_d}{fives}{next_d}➔{target_pair}", 
+                        "pair": f"{prev_d}{fives_str}{next_d}➔{target_pair}", 
                         "star": star_name, 
                         "strength": strength, 
                         "is_infinite": True
                     })
-                i = j - 1
+                # 橋樑搭完後，指標跳到結尾的數字，做為下一組的開頭 (如 159 -> 19，下一組從 9 開始)
+                i = j 
+                continue
             else:
-                # 若 5 後面是 0 或到末尾，不搭橋，直接讓當前數字與 5 組合 (例如 95)
+                # 拒絕搭橋！(5 後面是 0 或是字串結束)
+                # 直接讓前面的數字和第一個 5 組合 (例如 95)
                 pair = f"{current_char}5"
                 star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, ("比肩", "強"))
                 pairs_info.append({
@@ -451,20 +454,24 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                     "strength": strength, 
                     "is_infinite": False
                 })
+                # 指標只前進 1 格，下一輪會從 5 開始處理 (從而形成 50)
                 i += 1
-        else:
-            # 3. 一般相鄰數字組合
-            pair = raw_seq[i:i+2]
-            star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
-            if star_name:
-                pairs_info.append({
-                    "pair": pair, 
-                    "star": star_name, 
-                    "strength": strength, 
-                    "is_infinite": False
-                })
-            i += 1
+                continue
 
+        # 情況 3：一般相鄰數字組合 (沒有 5 牽涉)
+        pair = raw_seq[i:i+2]
+        star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
+        if star_name:
+            pairs_info.append({
+                "pair": pair, 
+                "star": star_name, 
+                "strength": strength, 
+                "is_infinite": False
+            })
+        i += 1
+
+    # 日期含 5 補齊
+    has_day_five = '5' in day_s
     if has_day_five:
         pairs_info.append({
             "pair": f"{day_s}➔日期含5視為比肩", 
