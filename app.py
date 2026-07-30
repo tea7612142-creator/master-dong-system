@@ -405,7 +405,7 @@ def process_digits_and_pairs(year: int, month: int, day: int):
     while i < n - 1:
         current_char = raw_seq[i]
         
-        # 情況 1：當前字是 '5'，直接與下一個數字組合（非搭橋，歸為比肩）
+        # 情況 1：當前字是 '5'，與下一個數字組成兩位數（如 50、53 等）
         if current_char == '5':
             pair = f"5{raw_seq[i+1]}"
             pairs_info.append({
@@ -420,13 +420,12 @@ def process_digits_and_pairs(year: int, month: int, day: int):
         # 情況 2：下一個數字是 '5'
         if raw_seq[i+1] == '5':
             j = i + 1
-            # 找到連續 5 的終點
             while j < n and raw_seq[j] == '5':
                 j += 1
             
             prev_d = current_char
             
-            # 嚴格條件：只有當「5 前面不是 0」且「5 後面還有數字且後面也不是 0」時，才允許搭橋！
+            # 只有當「5 前面不是 0」且「5 後面還有數字且後面也不是 0」時，才允許搭橋！
             if prev_d != '0' and j < n and raw_seq[j] != '0':
                 next_d = raw_seq[j]
                 target_pair = prev_d + next_d
@@ -442,7 +441,7 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                 i = j  # 搭橋成功，指標跳過 5
                 continue
             else:
-                # 拒絕搭橋（前面是 0 或後面是 0），形成 05 或 X5 的單純組合
+                # 拒絕搭橋，形成前數字與 5 的兩位數組合 (如 85)
                 pair = f"{current_char}5"
                 pairs_info.append({
                     "pair": pair, 
@@ -453,7 +452,7 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                 i += 1
                 continue
 
-        # 情況 3：一般相鄰數字組合
+        # 情況 3：一般相鄰兩位數字組合
         pair = raw_seq[i:i+2]
         star_name, strength = ("比肩", "強") if '0' in pair else STAR_MAP.get(pair, (None, None))
         if star_name:
@@ -464,16 +463,6 @@ def process_digits_and_pairs(year: int, month: int, day: int):
                 "is_infinite": False
             })
         i += 1
-
-    # 日期含 5 補齊判定
-    has_day_five = '5' in day_s
-    if has_day_five:
-        pairs_info.append({
-            "pair": f"{day_s}➔日期含5視為比肩", 
-            "star": "比肩", 
-            "strength": "強", 
-            "is_infinite": False
-        })
 
     return raw_seq, pairs_info
 
