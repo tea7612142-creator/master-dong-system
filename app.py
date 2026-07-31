@@ -653,7 +653,7 @@ def render_panel(res, title_prefix, date_desc):
 # -------------------------------------------------------------
 # 5. 主畫面介面
 # -------------------------------------------------------------
-st.markdown("<div class='main-title'>董大師 ‧ 數字易經排盤系統</div>", unsafe_allow_html=True)
+st.markdown("<div class='main-title'>言梧閣數字易經排盤系統</div>", unsafe_allow_html=True)
 
 # 輸入表單卡片
 with st.form("birth_form"):
