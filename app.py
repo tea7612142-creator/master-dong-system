@@ -6,7 +6,7 @@ from lunar_python import Solar, Lunar
 # 1. 頁面配置
 # -------------------------------------------------------------
 st.set_page_config(
-    page_title="董大師 數字易經排盤系統",
+    page_title="言梧閣數字易經排盤系統",
     page_icon="🔮",
     layout="wide"
 )
